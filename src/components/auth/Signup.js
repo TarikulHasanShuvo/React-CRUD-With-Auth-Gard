@@ -26,8 +26,7 @@ export default class Signup extends Component {
         e.preventDefault();
         ApiService.post(`/register`,this.state.signupData)
             .then((response) => {
-                if (response.status == 200) {
-
+                if (response.status === 200) {
                     this.setState({
                         signupData: {
                             name    : "",
@@ -35,9 +34,13 @@ export default class Signup extends Component {
                             password: "",
                         },
                     });
+
                     toast.success(`Success Notification !  Sign up successfully`, {
                         position: toast.POSITION.TOP_RIGHT
                     });
+                  setTimeout(()=>{
+                      this.props.history.push("/sign-in");
+                  },1000)
                 }
             }).catch((error) => {
                 toast.error(`Error Notification ! ${error}`, {

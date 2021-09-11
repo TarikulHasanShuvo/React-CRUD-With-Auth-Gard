@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {ToastContainer, toast} from 'react-toastify';
 import ApiService from "../../services/apiService";
+import {NavLink} from "react-router-dom";
 
 export default class Home extends Component {
     state = {
@@ -41,7 +42,7 @@ export default class Home extends Component {
     saveProduct = (e) => {
         e.preventDefault()
         ApiService.post(`/product`,this.state.product).then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 toast.success(`Success Notification !  Product added successfully`, {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -61,7 +62,7 @@ export default class Home extends Component {
     updateProduct = (e) => {
         e.preventDefault()
         ApiService.update(`/product/${this.state.product.id}`,this.state.product).then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 toast.success(`Success Notification !  Product Update successfully`, {
                     position: toast.POSITION.TOP_RIGHT
                 });
@@ -76,7 +77,7 @@ export default class Home extends Component {
     }
     deleteProduct = (id) => {
         ApiService.delete(`/product/${id}`).then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 this.getProducts();
                 toast.success(`Success Notification !  Product Deleted successfully`, {
                     position: toast.POSITION.TOP_RIGHT
@@ -118,7 +119,7 @@ export default class Home extends Component {
             <div className="container">
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
                     <div className="container-fluid">
-                        <a className="navbar-brand" href="/home">React App</a>
+                        <NavLink className="navbar-brand" to="/home">React App</NavLink>
                         <div className="collapse navbar-collapse" id="navbarSupportedContent">
                             <form className="ms-auto d-flex">
                                 <h5 className="me-4">Welcome , {user.name}</h5>

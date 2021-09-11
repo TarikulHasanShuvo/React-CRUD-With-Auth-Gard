@@ -1,15 +1,30 @@
-import React, { Component } from "react";
+import React from "react";
 import 'react-toastify/dist/ReactToastify.css';
-import Signup from "./components/auth/Signup";
 import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
 import Home from "./components/pages/Home";
-import {BrowserRouter as Router, Route, NavLink, Switch, Redirect} from "react-router-dom";
+import NoPageFound from "./components/pages/NotFound";
+import {GuardProvider, GuardedRoute} from 'react-router-guards';
+import {BrowserRouter, NavLink, Switch} from "react-router-dom";
 
-export default class App extends Component {
-    render() {
-        let routes = (
-            <Router>
-                <Switch>
+const getIsLoggedIn = localStorage.getItem("accessToken");
+
+const requireLogin  = (to, from, next) => {
+    if (to.meta.auth) {
+        if (getIsLoggedIn) {
+            next();
+        }
+        next.redirect('/sign-in');
+    } else {
+        next();
+    }
+};
+
+const App = () => (
+    <BrowserRouter>
+        <div className="w-100 d-flex justify-content-center mt-5">
+            <div className="App w-50">
+                {    getIsLoggedIn ? '':  <Switch>
                     <div className="Tab">
                         <NavLink to="/sign-in" activeClassName="activeLink" className="signIn">
                             Sign In
@@ -18,32 +33,18 @@ export default class App extends Component {
                             Sign Up
                         </NavLink>
                     </div>
-                    <Redirect to="/" />
-                </Switch>
-                <Route exact path="/" component={Signup}/>
-                <Route path="/sign-in" component={Login}/>
-            </Router>
-
-        );
-        const login = localStorage.getItem("accessToken");
-        if (login) {
-            routes = (
-             <Router>
-                 <Switch>
-                     <Route path="/home" component={Home}/>
-                     <Redirect to="/" />
-                 </Switch>
-             </Router>
-            );
-        }
-
-        return (
-            <div className="w-100 d-flex justify-content-center mt-5">
-                <div className="App w-50">
-                    {routes}
-                </div>
+                </Switch>  }
+                <GuardProvider guards={[requireLogin]} error={NoPageFound}>
+                    <Switch>
+                        <GuardedRoute path="/sign-in" exact component={Login}/>
+                        <GuardedRoute path="/" exact component={Signup}/>
+                        <GuardedRoute path="/home" exact component={Home} meta={{auth: true}}/>
+                        <GuardedRoute path="*" component={NoPageFound}/>
+                    </Switch>
+                </GuardProvider>
             </div>
+        </div>
+    </BrowserRouter>
 
-        );
-    }
-}
+);
+export default App;

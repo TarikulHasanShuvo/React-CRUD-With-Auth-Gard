@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import {Redirect} from "react-router-dom";
 import ApiService from "../../services/apiService";
 import {toast, ToastContainer} from "react-toastify";
 
@@ -11,6 +10,7 @@ export default class Login extends Component {
             password   : "",
         };
     }
+
 
     onChangehandler = (e) => {
         let name   = e.target.name;
@@ -26,13 +26,13 @@ export default class Login extends Component {
             email   : this.state.email,
             password: this.state.password,
         }).then((response) => {
-            if (response.status == 200) {
+            if (response.status === 200) {
                 toast.success(`Success Notification !  Login successfully`, {
                     position: toast.POSITION.TOP_RIGHT
                 });
                 localStorage.setItem("accessToken", response.data.access_token);
                 localStorage.setItem("userData", JSON.stringify(response.data.user));
-                window.location = '/home'
+                this.props.history.push("/home");
             }
             })
             .catch((error) => {
@@ -45,7 +45,7 @@ export default class Login extends Component {
     render() {
         const login = localStorage.getItem("accessToken");
         if (login) {
-           window.location = '/home'
+           window.location = "/home";
         }
         return (
             <div>
