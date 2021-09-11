@@ -1,8 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import ApiService from './services/apiService'
+import './scss/app.scss';
+import 'bootstrap';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
+ApiService.init();
 
 ReactDOM.render(
   <React.StrictMode>
