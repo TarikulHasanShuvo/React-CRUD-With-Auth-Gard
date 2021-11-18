@@ -1,9 +1,10 @@
 import React, {Component} from "react";
 import {ToastContainer, toast} from 'react-toastify';
 import ApiService from "../../services/apiService";
-import {NavLink} from "react-router-dom";
+import {ThemeContext} from "../../context/theme-context";
+import TopNav from "../layout/TopNav";
 
-export default class Home extends Component {
+class Home extends Component {
     state = {
         navigate: false,
     };
@@ -11,14 +12,14 @@ export default class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            products : [],
+            products: [],
             product: {
-                name       : "",
-                size       : "",
-                price      : "",
+                name: "",
+                size: "",
+                price: "",
                 description: "",
             },
-            editable : false
+            editable: false
         };
     }
 
@@ -27,21 +28,21 @@ export default class Home extends Component {
     }
 
     onChangehandler = (e, key) => {
-        const {product}        = this.state;
+        const {product} = this.state;
         product[e.target.name] = e.target.value;
         this.setState({product});
     };
 
     getProducts = async () => {
-      await ApiService.get(`/product`).then(({data}) => {
-          this.setState({products : data})
-          this.reset();
+        await ApiService.get(`/product`).then(({data}) => {
+            this.setState({products: data})
+            this.reset();
         });
     }
 
     saveProduct = (e) => {
         e.preventDefault()
-        ApiService.post(`/product`,this.state.product).then((response) => {
+        ApiService.post(`/product`, this.state.product).then((response) => {
             if (response.status === 200) {
                 toast.success(`Success Notification !  Product added successfully`, {
                     position: toast.POSITION.TOP_RIGHT
@@ -56,12 +57,12 @@ export default class Home extends Component {
             });
     }
     editProduct = (product) => {
-        this.setState({editable : true})
-        this.setState({product : product})
+        this.setState({editable: true})
+        this.setState({product: product})
     }
     updateProduct = (e) => {
         e.preventDefault()
-        ApiService.update(`/product/${this.state.product.id}`,this.state.product).then((response) => {
+        ApiService.update(`/product/${this.state.product.id}`, this.state.product).then((response) => {
             if (response.status === 200) {
                 toast.success(`Success Notification !  Product Update successfully`, {
                     position: toast.POSITION.TOP_RIGHT
@@ -90,47 +91,37 @@ export default class Home extends Component {
                 });
             });
     }
-
     onLogoutHandler = () => {
         localStorage.clear();
         this.setState({
             navigate: true,
         });
     };
+
     reset = () => {
-        this.setState({editable : false})
-        this.setState({product :  {
-                name       : "",
-                size       : "",
-                price      : "",
-                description: "",
-            }})
         document.getElementById('close-btn').click();
+        this.setState({editable: false})
+        this.setState({
+            product: {
+                name: "",
+                size: "",
+                price: "",
+                description: "",
+            }
+        })
     }
 
 
     render() {
-        const user       = JSON.parse(localStorage.getItem("userData"));
         const {navigate} = this.state;
         if (navigate) {
             window.location = '/sign-in'
         }
+        let theme = this.context;
+        console.log(theme)
         return (
             <div className="container">
-                <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                    <div className="container-fluid">
-                        <NavLink className="navbar-brand" to="/home">React App</NavLink>
-                        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                            <form className="ms-auto d-flex">
-                                <h5 className="me-4">Welcome , {user.name}</h5>
-                                <button onClick={this.onLogoutHandler}
-                                        className="btn btn-outline-danger btn-sm">Logout
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </nav>
-
+                <TopNav onLogoutHandler={this.onLogoutHandler}/>
                 <div className="products-list mt-5">
                     <div className="card">
                         <div className="card-header d-flex">
@@ -152,17 +143,21 @@ export default class Home extends Component {
                                 </tr>
                                 </thead>
                                 <tbody>
-                                { this.state.products.map((product,key)=>
+                                {this.state.products.map((product, key) =>
                                     <tr key={key}>
-                                        <th scope="row">{key +1 }</th>
+                                        <th scope="row">{key + 1}</th>
                                         <td>{product.name}</td>
                                         <td>{product.description}</td>
                                         <td>{product.size}</td>
                                         <td>{product.price}</td>
                                         <td>
-                                            <button onClick={()=>this.editProduct(product)} data-bs-toggle="modal"
-                                                    data-bs-target="#exampleModal" className="btn btn-success btn-sm">Edit</button>
-                                            <button onClick={()=>this.deleteProduct(product.id)} className="btn btn-danger btn-sm ms-2">Delete</button>
+                                            <button onClick={() => this.editProduct(product)} data-bs-toggle="modal"
+                                                    data-bs-target="#exampleModal"
+                                                    className="btn btn-success btn-sm">Edit
+                                            </button>
+                                            <button onClick={() => this.deleteProduct(product.id)}
+                                                    className="btn btn-danger btn-sm ms-2">Delete
+                                            </button>
                                         </td>
                                     </tr>
                                 )}
@@ -178,7 +173,8 @@ export default class Home extends Component {
                     <div className="modal-dialog">
                         <div className="modal-content">
                             <div className="modal-header">
-                                <h5 className="modal-title" id="exampleModalLabel">{this.state.editable ? "Edit" : "Add New"} Product</h5>
+                                <h5 className="modal-title"
+                                    id="exampleModalLabel">{this.state.editable ? "Edit" : "Add New"} Product</h5>
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={this.reset}
                                         aria-label="Close"></button>
                             </div>
@@ -222,11 +218,14 @@ export default class Home extends Component {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button id="close-btn" type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={this.reset}>Close
+                                <button id="close-btn" type="button" className="btn btn-secondary"
+                                        data-bs-dismiss="modal" onClick={this.reset}>Close
                                 </button>
-                                { this.state.editable ? <button type="button" className="btn btn-success" onClick={this.updateProduct}>Update</button>
+                                {this.state.editable ? <button type="button" className="btn btn-success"
+                                                               onClick={this.updateProduct}>Update</button>
                                     :
-                                    <button type="button" className="btn btn-primary" onClick={this.saveProduct}>Save</button>
+                                    <button type="button" className="btn btn-primary"
+                                            onClick={this.saveProduct}>Save</button>
                                 }
 
                             </div>
@@ -239,3 +238,7 @@ export default class Home extends Component {
         );
     }
 }
+
+Home.contextType = ThemeContext;
+
+export default Home;
