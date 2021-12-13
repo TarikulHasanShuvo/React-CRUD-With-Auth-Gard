@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import {Link} from "react-router-dom";
 import ApiService from "../../services/apiService";
 import { ToastContainer, toast } from 'react-toastify';
+import TopNav from "../layout/TopNav";
 
 export default class Signup extends Component {
     userData;
@@ -51,7 +52,8 @@ export default class Signup extends Component {
 
     render() {
         return (
-            <div>
+            <div className="container">
+                <TopNav/>
                 <form className="containers text-start">
                     <div className="mt-5 mb-4">
                         <label htmlFor="exampleInputEmail1" className="form-label">Name </label>
